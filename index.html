@@ -4,22 +4,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cheetos</title>
+    <title>Pregunta Especial</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @property --flap-rotation {
+            syntax: "<angle>";
+            inherits: false;
+            initial-value: 0deg;
+        }
+
+        @property --progress {
+            syntax: "<percentage>";
+            inherits: false;
+            initial-value: 20%;
+        }
+
+        @property --text {
+            syntax: "<number>";
+            inherits: false;
+            initial-value: 0.0;
+        }
+
+        @property --buttons {
+            syntax: "<number>";
+            inherits: false;
+            initial-value: 0.0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 1000vh;
+        }
+
+
+        .text-to-show {
+            animation: reveal-text ease both;
+            animation-timeline: scroll();
+            animation-range: 80%;
+            opacity: var(--text);
+        }
+
+        .btn {
+            animation: reveal-buttons ease both;
+            animation-timeline: scroll();
+            animation-range: 90%;
+            opacity: var(--buttons);
+            border-radius: 10px;
+        }
+
+        .envelope {
+            container: envelope / inline-size;
+            perspective: 1000px;
+        }
+
+        .flap {
+            clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+            width: 100cqw;
+            height: 30cqw;
+            transform-style: preserve-3d;
+            rotate: x var(--flap-rotation);
+            transform-origin: 50% 0;
+            animation: animate-flap ease both;
+            animation-timeline: scroll();
+            animation-range: 0 60%;
+            z-index: 4;
+            position: relative;
+        }
+
+        .face {
+            clip-path: polygon(50% 35%, 100% 0, 100% 100%, 0 100%, 0 0);
+        }
+
+        .heart {
+            --c: red;
+            position: absolute;
+            width: 50cqw;
+            left: 50%;
+            top: 0;
+            transform: translateY(var(--progress));
+            animation: show-heart ease both;
+            animation-timeline: scroll();
+            animation-range: 60%;
+            margin-left: -25cqw;
+            aspect-ratio: 1/1;
+            z-index: 3;
+            background:
+
+                radial-gradient(at 70% 31%, var(--c) 29%, #0000 30%),
+                radial-gradient(at 30% 31%, var(--c) 29%, #0000 30%),
+                conic-gradient(from -45deg at 50% 84%, var(--c) 90deg, #0000 0) bottom/100% 50% no-repeat;
+        }
+
+        @keyframes animate-flap {
+            from {
+                --flap-rotation: 0deg;
+            }
+
+            99% {
+                z-index: 4
+            }
+
+            100% {
+                --flap-rotation: 180deg;
+                z-index: 1;
+            }
+        }
+
+        @keyframes show-heart {
+            from {
+                --progress: 20%;
+            }
+
+            to {
+                --progress: -90%;
+            }
+        }
+
+        @keyframes reveal-text {
+            from {
+                --text: 0.0;
+            }
+
+            to {
+                --text: 1.0;
+            }
+        }
+
+        @keyframes reveal-buttons {
+            from {
+                --buttons: 0.0;
+            }
+
+            to {
+                --buttons: 1.0;
+            }
+        }
+    </style>
+
+    <style>
+        .btns {
+            color: #ecf0f1;
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            transition: opacity ease .2s;
+        }
+
+        .btn {
+            padding: 2px 15px;
+            margin: 10px 0px;
+            transition: scale ease 0.1s, top ease 0.2s, left ease 0.2s;
+        }
+
+        .btn.btn-yes {
+            background-color: #2980b9;
+        }
+
+        .btn.btn-no {
+            background-color: #e74c3c;
+        }
+    </style>
 </head>
 
 <body>
-    <script>
-      
 
-        if("CSS" in window){
-            if(CSS.supports("animation-timeline: scroll()")){
-                alert("Soportado");
-            } else {
-                alert("No soportado");
-            }
-        } else {
-            alert("CSS no soportado");
+    <h1 class="text-[clamp(20px,5vmin,100px)] text-center">Scroll 😉</h1>
+    <div class="top-0 left-0 fixed inset-0 grid place-items-center">
+        <div class="envelope relative w-[60vmin] aspect-video bg-slate-200 shadow-xl">
+            <div class="flap bg-slate-300">
+
+            </div>
+            <div class="heart" id="heart"></div>
+            <div class="face bg-slate-100 inset-0 absolute z-[3]"></div>
+            <p class="text-to-show relative z-10 pt-[6cqw] text-center text-[5cqw] text-red-400" id="text">
+                ¿Quieres ser mi san Valentín, Maeta?
+            </p>
+            <div class="btns relative z-[20]" id="btns">
+                <div class="btn btn-yes text-[5cqw]" id="btnYes">Si</div>
+                <div class="btn btn-no text-[5cqw]" id="btnNo">No</div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const btnYes = document.getElementById("btnYes");
+        const btnNo = document.getElementById("btnNo");
+
+        const selectYes = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
         }
+
+        let countClicks = 1;
+        let scaleTo = 1;
+        let bySteps = 0.1;
+
+        btnYes.addEventListener("click", (e) => {
+            btnNo.style.left = "0px";
+            btnNo.style.top = "0px";
+            btnNo.style.scale = 1;
+            btnYes.style.scale = 1;
+            btnYes.setAttribute("disabled", "true");
+            btnNo.setAttribute("disabled", "true");
+            const h = document.getElementById("heart");
+            h.style.backgroundImage = `url(https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDEzaXVzaWRtN2Q5d2k4d2Iza3B6bWduaWFhMndybHNwZXQyNmlteCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/0OgdJVNjbcIifqSb7U/giphy.gif)`
+            h.style.backgroundRepeat = "no-repeat";
+            h.style.backgroundSize = "cover";
+            h.style.borderRadius = "20px";
+            document.getElementById("btns").style.opacity = 0;
+
+            document.getElementById("text").innerHTML = "¡Awwwwww! Te amo <3"
+        });
+
+        btnNo.addEventListener("click", (e) => {
+            scaleTo+= bySteps;
+            (steps[countClicks] ?? moveRandom)();
+            btnYes.style.scale = scaleTo;
+            countClicks++;
+            const a = Math.round(countClicks / 5);
+            bySteps = 0.1 * Math.max(a, 1);
+        });
+
+        const moveRandom = () => {
+            const padding = 20;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            const minX = padding;
+            const maxX = vw - btnNo.getBoundingClientRect().width - padding;
+
+            const minY = padding;
+            const maxY = vh - btnNo.getBoundingClientRect().height - padding;
+            const x = Math.random() * (maxX - minX) + minX;
+            const y = Math.random() * (maxY - minY) + minY;
+            moveTo(x, y);
+        }
+
+        const moveTo = (x, y) => {
+
+            // Rectángulo actual del elemento en viewport
+            const rect = btnNo.getBoundingClientRect();
+
+            // Posición actual dentro del flujo (offset relativo)
+            const currentTop = btnNo.offsetTop;
+            const currentLeft = btnNo.offsetLeft;
+
+            // Diferencia entre donde está y donde lo quieres
+            const deltaX = x - rect.left;
+            const deltaY = y - rect.top;
+
+            // Asegurar position relative
+            btnNo.style.position = "relative";
+
+            // Aplicar desplazamiento relativo
+            btnNo.style.left = (parseFloat(btnNo.style.left || 0) + deltaX) + "px";
+            btnNo.style.top = (parseFloat(btnNo.style.top || 0) + deltaY) + "px";
+        }
+
+        const steps = {
+            1: () => {
+                btnNo.style.scale = 0.9;
+                /* btnYes.style.scale = 1.1; */
+            },
+            2: () => {
+                btnNo.style.scale = 0.8;
+                /* btnYes.style.scale = 1.2; */
+            },
+            3: () => {
+                btnNo.style.scale = 0.7;
+                /* btnYes.style.scale = 1.3; */
+            },
+            4: () => {
+                moveRandom();
+                btnNo.style.scale = 1;
+            }
+        }
+
     </script>
 </body>
 
